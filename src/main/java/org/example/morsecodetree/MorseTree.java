@@ -1,11 +1,22 @@
 package org.example.morsecodetree;
 
-public class MorseTree {
+import javafx.application.Application;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+
+public class MorseTree extends Application {
     private Node root;
 
     public MorseTree() {
         root = new Node('\0');
         buildTree();
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+
     }
 
     private void buildTree() {
@@ -77,11 +88,50 @@ public class MorseTree {
         return current.letter != '\0' ? current.letter : '?';
     }
 
-    public static void main(String[] args) {
-        MorseTree tree = new MorseTree();
-        //System.out.println(tree.decode(".-"));// Saída: A
-        System.out.println(tree.decodeWord(".-.. .- ..-")); // Deve imprimir "LAU"
-        System.out.println(tree.decodeWord("-.. ..- -.. .-")); // Deve imprimir "DUDA"
-        System.out.println(tree.decodeWord(".--- ..- -.")); // Deve imprimir "JUN"
+    // Calcula a altura da árvore
+    public int getHeight() {
+        return getHeight(root);
+    }
+    private int getHeight(Node node) {
+        if (node == null) {
+            return 0;
+        }
+        return 1 + Math.max(getHeight(node.left), getHeight(node.right));
+    }
+
+    // Desenha a árvore
+    public void drawTree(Canvas canvas) {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(2);
+        // Começa o desenho da árvore na raiz
+        drawNode(gc, root, canvas.getWidth() / 2, 40, canvas.getWidth() / 4,
+                1);
+    }
+    private void drawNode(GraphicsContext gc, Node node, double x, double y,
+                          double xOffset, int level) {
+        if (node == null) {
+            return;
+        }
+        // Desenha um círculo ao redor do nó
+        gc.setStroke(Color.BLACK);
+        gc.strokeOval(x - 15, y - 15, 30, 30); // Desenha o círculo com raio 15
+        // Desenha a letra dentro do círculo
+        gc.strokeText(String.valueOf(node.letter == ' ' ? ' ' : node.letter), x
+                - 5, y + 5);
+        // Desenho das linhas para os nós filhos
+        if (node.left != null) {
+            double newX = x - xOffset;
+            double newY = y + 120; // Aumentei o espaçamento vertical
+            gc.strokeLine(x, y + 15, newX, newY - 15); // Linha entre o nó atual e o filho à esquerda
+            drawNode(gc, node.left, newX, newY, xOffset / 2, level + 1);
+        }
+        if (node.right != null) {
+            double newX = x + xOffset;
+            double newY = y + 120; // Aumentei o espaçamento vertical
+            gc.strokeLine(x, y + 15, newX, newY - 15); // Linha entre o nó atual e o filho à direita
+            drawNode(gc, node.right, newX, newY, xOffset / 2, level + 1);
+        }
     }
 }
