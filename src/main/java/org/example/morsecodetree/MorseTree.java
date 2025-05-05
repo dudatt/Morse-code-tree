@@ -55,6 +55,14 @@ public class MorseTree {
         current.letter = letter;
     }
 
+    public String decodeWord(String morseWord) {
+        StringBuilder result = new StringBuilder();
+        for (String code : morseWord.trim().split(" ")) {
+            result.append(decode(code));
+        }
+        return result.toString();
+    }
+
     public char decode(String code) {
         Node current = root;
         for (char c : code.toCharArray()) {
@@ -67,5 +75,13 @@ public class MorseTree {
             }
         }
         return current.letter != '\0' ? current.letter : '?';
+    }
+
+    public static void main(String[] args) {
+        MorseTree tree = new MorseTree();
+        //System.out.println(tree.decode(".-"));// Saída: A
+        System.out.println(tree.decodeWord(".-.. .- ..-")); // Deve imprimir "LAU"
+        System.out.println(tree.decodeWord("-.. ..- -.. .-")); // Deve imprimir "DUDA"
+        System.out.println(tree.decodeWord(".--- ..- -.")); // Deve imprimir "JUN"
     }
 }
